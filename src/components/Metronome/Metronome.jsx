@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import clickHigh from '../../assets/high.wav';
 import clickLow from '../../assets/low.wav';
-
+import './slider.scss';
+import './Metronome.scss';
 let tapArray = [];
 class Metronome extends Component {
   constructor(props) {
@@ -9,7 +10,7 @@ class Metronome extends Component {
 
     this.state = {
       isPlaying: false,
-      beatCount: true,
+      beatCount: 1,
       bpm: 100,
       beatsPerMeasure: 4
     };
@@ -30,7 +31,7 @@ class Metronome extends Component {
       this.timer = setInterval(this.playClick, (60 / this.state.bpm) * 1000);
       this.setState(
         {
-          beatCount: 0,
+          beatCount: 1,
           isPlaying: true
           // Play a click "immediately" (after setState finishes)
         },
@@ -40,14 +41,17 @@ class Metronome extends Component {
   };
 
   playClick = () => {
-    if (this.state.beatCount) {
+    if (this.state.beatCount < 4) {
       this.clickHigh.play();
+      this.setState(prevState => ({
+        beatCount: prevState.beatCount + 1
+      }));
     } else {
       this.clickLow.play();
+      this.setState(prevState => ({
+        beatCount: 1
+      }));
     }
-    this.setState(prevState => ({
-      beatCount: !prevState.beatCount
-    }));
   };
 
   handleBpmChange = event => {
@@ -60,7 +64,7 @@ class Metronome extends Component {
 
       // Set the new BPM, and reset the beat beatCounter
       this.setState({
-        beatCount: 0,
+        beatCount: 1,
         bpm
       });
     } else {
@@ -107,7 +111,7 @@ class Metronome extends Component {
 
         // Set the new BPM, and reset the beat beatCounter
         this.setState({
-          beatCount: 0,
+          beatCount: 1,
           bpm
         });
       } else {
@@ -123,7 +127,7 @@ class Metronome extends Component {
     return (
       <div className="metronome">
         <div className="bpm-slider">
-          <div>{bpm} BPM</div>
+          <div className="bpm">{bpm} BPM</div>
           <input
             id="slide"
             type="range"
@@ -133,8 +137,12 @@ class Metronome extends Component {
             defaultValue={bpm}
           />
         </div>
-        <button onClick={this.tapTempo}>Tap</button>
-        <button onClick={this.startStop}>{isPlaying ? 'Stop' : 'Start'}</button>
+        <div className="btn-tap" onClick={this.tapTempo}>
+          Tap Tempo
+        </div>
+        <div className="btn-start" onClick={this.startStop}>
+          {isPlaying ? 'Stop' : 'Start'}
+        </div>
       </div>
     );
   }
